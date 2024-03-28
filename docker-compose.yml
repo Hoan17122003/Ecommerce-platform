@@ -1,0 +1,49 @@
+# version: '3.8'
+# services:
+#   dev-database:
+#     image: mcr.microsoft.com/mssql/server:2019-latest
+#     container_name:  dev-database
+#     environment:
+#        MSSQL_SA_PASSWORD : '123'
+#        MSSQL_PID: 'Express'
+#        ports: '1433'  
+#     networks:
+#       - nestjs-networks
+# networks:
+#   nestjs-networks:
+
+
+
+
+version: '2.7'  # Explicitly specify a supported version
+
+services:
+  dev-database:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: my-sql-server
+    environment:
+      - SA_PASSWORD_FILE=/run/secrets/123  # Use a secret for password
+      - ACCEPT_EULA=Y
+      - database=testdb
+    ports:
+      - "1435:1433"
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge
+
+
+  # pssql:
+  #   image: postgress:latest
+  #   container_name: postgressSQL
+  #   environment:
+  #     - POSTGRESS_USER=postgress  # Use a secret for password
+  #     - POSTGRESS_PASSWORD=ABC123123
+  #     - database=testdb
+  #   ports:
+  #     - 5434:5432
+  #   networks:
+  #     - nestjs-network
+    
