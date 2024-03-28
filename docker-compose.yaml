@@ -15,8 +15,7 @@
 
 
 
-version: '2.7'  # Explicitly specify a supported version
-
+  # Explicitly specify a supported version 
 services:
   dev-database:
     image: mcr.microsoft.com/mssql/server:2019-latest

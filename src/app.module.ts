@@ -10,10 +10,13 @@ import { DatabaseModule } from './database/database.module';
 import { AccountModule } from './account/account.module';
 // import { AccountModule } from './account/account.module';
 
+// -------------- service
+import { AccountService } from './account/account.service';
+import { BuyerService } from './buyer/buyer.service';
+import { VenderService } from './vender/vender.service';
 
 @Module({
     // imports: [DatabaseModule, AuthModule, BuyerModule, VenderModule, ProductModule, BillModule, TransportersModule, PaymentModule],
-    imports: [DatabaseModule, BuyerModule, VenderModule,AccountModule]
-
+    imports: [DatabaseModule, BuyerModule, VenderModule, AccountModule, AuthModule],
 })
 export class AppModule { }

@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn, ManyToOne } from "typeorm";
+import { BaseEntity, Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { TaiKhoan } from "./TaiKhoan.entity";
 import { Chat } from "./Chat.entity";
 import { DonHang } from "./DonHang.entity";
@@ -8,9 +8,13 @@ import { NguoiMuaHangEntity } from "./index.entity";
 
 @Entity('NguoiMuaHang')
 export class NguoiMuaHang extends BaseEntity {
-    @PrimaryGeneratedColumn({
-        type: 'int'
+    @PrimaryColumn({
+        type: 'int',
+        // name : 'MaNguoiMuaHang',
+        primaryKeyConstraintName : 'MaNguoiMuaHang'
     })
+    // @OneToOne(() => TaiKhoan)
+    // @JoinColumn()
     MaNguoiMuaHang: number
 
     @Column({
@@ -37,9 +41,6 @@ export class NguoiMuaHang extends BaseEntity {
     })
     NgayThangNamSinh: Date
 
-    @ManyToOne(() => TaiKhoan, taiKhoan => taiKhoan.nguoiMuaHang)
-    TaiKhoanId: TaiKhoan
-
     @OneToMany(() => Chat, chat => chat.nguoiMuaHang)
     chats: Chat[]
 
@@ -50,7 +51,6 @@ export class NguoiMuaHang extends BaseEntity {
     binhLuanDanhGia: BinhLuanDanhGia[]
 
     @OneToOne(() => ViNguoiDung, viNguoiDung => viNguoiDung.nguoiMuaHang)
-    @JoinColumn()
     viNguoiDung: ViNguoiDung
 
 }

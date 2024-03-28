@@ -8,6 +8,6 @@ import { VenderService } from './vender.service'
 @Module({
     imports: [DatabaseModule],
     providers: [unknowProviders('NGUOIBANHANG_REPOSITORY', NguoiBanHangEntity), VenderService],
-    exports: [VenderService]
+    exports: [VenderModule]
 })
 export class VenderModule { }

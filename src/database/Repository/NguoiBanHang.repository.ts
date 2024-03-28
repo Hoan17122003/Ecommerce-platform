@@ -5,25 +5,25 @@ import { NguoiBanHangEntity } from '../Entity/index.entity'
 import { dataSource } from '../database.providers'
 
 
-export const NguoiBanHangRepository = dataSource.getRepository(NguoiBanHangEntity).extends({
-    // getAllCommentForProduct(idProduct: number) {
-    //     return this.createQueryBuilder()
-    //         .select("NoiDung", "")
-    //         // .leftJoinAndSelect('BinhLuanDanhGia.MaNguoiMuaHang',)
-    //         .where(`type = BinhLuan and MaSanPham = ${idProduct}`)
-    //         .getMany()
-    // }
+// const NguoiBanHangRepository = dataSource.getRepository(NguoiBanHangEntity).extends({
+export class NguoiBanHangRepository extends Repository<NguoiBanHangEntity> {
+    getAllCommentForProduct(idProduct: number) {
+        return this.createQueryBuilder()
+            .select("NoiDung", "")
+            // .leftJoinAndSelect('BinhLuanDanhGia.MaNguoiMuaHang',)
+            .where(`type = BinhLuan and MaSanPham = ${idProduct}`)
+            .getMany()
+    }
 
-    // profile(id: EntityId): Promise<NguoiBanHangEntity> {
-    //     return this.createQueryBuilder()
-    //         .select('TaiKhoan.TenTaiKhoan', 'AnhDaiDien')
-    //         .leftJoinAndSelect('NguoiBanHang.TaiKhoanId', 'TaiKhoan')
-    //         .where('TaiKhoanId = :TaiKhoanId', {
-    //             TaiKhoanId: id
-    //         })
-    //         .getOne()
-    // }
+    profile(id: EntityId): Promise<NguoiBanHangEntity> {
+        return this.createQueryBuilder()
+            .select('TaiKhoan.TenTaiKhoan', 'AnhDaiDien')
+            .leftJoinAndSelect('NguoiBanHang.TaiKhoanId', 'TaiKhoan')
+            .where('TaiKhoanId = :TaiKhoanId', {
+                TaiKhoanId: id
+            })
+            .getOne()
+    }
 
-
-
-})
+    // })
+}

@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn, BaseEntity } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn, BaseEntity, ManyToOne, PrimaryColumn } from "typeorm";
 
 import { TaiKhoan } from "./TaiKhoan.entity";
 import { Chat } from "./Chat.entity";
@@ -9,9 +9,11 @@ import { ViNguoiDung } from "./ViNguoiDung.entity";
 @Entity('NguoiBanHang')
 export class NguoiBanHang extends BaseEntity {
 
-    @PrimaryGeneratedColumn({
+    @PrimaryColumn({
         type: 'int'
     })
+    // @OneToOne(() => TaiKhoan)
+    // @JoinColumn()
     MaNguoiBanHang: number
 
     @Column({
@@ -44,7 +46,7 @@ export class NguoiBanHang extends BaseEntity {
     })
     DiaChi: string
 
-    taiKhoan: TaiKhoan
+
     @OneToMany(() => Chat, chat => chat.nguoiBanHang)
     chats: Chat[]
 

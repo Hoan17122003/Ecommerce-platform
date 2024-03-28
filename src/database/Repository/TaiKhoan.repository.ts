@@ -17,19 +17,22 @@ export class TaiKhoanRepository extends Repository<TaiKhoanEntity> {
     //         .execute()
     // }
 
-    // async findOneId(id: EntityId): Promise<TaiKhoanEntity | null> {
-    //     try {
-    //         return await this.createQueryBuilder('TaiKhoan')
-    //             .where('TaiKhoanId = :id', {
-    //                 id: id
-    //             })
-    //             .getOne();
 
-    //     } catch (error) {
-    //         console.log(error);
-    //         return null;
-    //     }
-    // }
+    
+
+    async findOneId(id: EntityId): Promise<TaiKhoanEntity | null> {
+        try {
+            return await this.createQueryBuilder('TaiKhoan')
+                .where('TaiKhoanId = :id', {
+                    id: id
+                })
+                .getOne();
+
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
 
 
 }

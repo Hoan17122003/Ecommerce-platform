@@ -18,7 +18,7 @@ export const databaseProviders = [
         options: {
           // Tùy chọn này để tin tưởng vào chứng chỉ tự ký
           trustServerCertificate: true,
-          encrypt: true, // Sử dụng SSL/TLS
+          // encrypt: true, // Sử dụng SSL/TLS
         },
       });
 

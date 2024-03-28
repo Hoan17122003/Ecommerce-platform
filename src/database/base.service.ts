@@ -17,7 +17,7 @@ export class BaseService<T extends BaseEntity, R extends Repository<T>> implemen
     }
 
     findById(id: EntityId): Promise<T> {
-        return this.findById(id)
+        return this.repository.findOneById(id)
     }
 
     findByIds(ids: [EntityId]): Promise<T[]> {
@@ -30,7 +30,7 @@ export class BaseService<T extends BaseEntity, R extends Repository<T>> implemen
 
     async update(id: EntityId, data: any): Promise<T> {
         await this.repository.update(id, data)
-        return this.findById(id)
+        return this.repository.findOneById(id)
     }
 
     delete(id: EntityId): Promise<DeleteResult> {

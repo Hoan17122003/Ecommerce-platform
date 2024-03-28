@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn, UpdateDateColumn, OneToMany, BaseEntity, PrimaryColumn } from "typeorm";
-import * as argon2 from 'argon2'
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, Relation, CreateDateColumn, UpdateDateColumn, OneToMany, BaseEntity, PrimaryColumn, OneToOne, JoinColumn } from "typeorm";
+import * as argon from 'argon2'
 import { TaiKhoanDTO } from "src/account/dto/account.dto";
 
 @Entity('TaiKhoan')
@@ -57,21 +57,31 @@ export class TaiKhoan extends BaseEntity {
         type: 'bit',
         default: 1,
     })
-    trangThaiTaiKhoan: number
+    trangThaiTaiKhoan: number;
 
-    @OneToMany(() => NguoiMuaHang, nguoiMuaHang => nguoiMuaHang.TaiKhoanId)
-    nguoiMuaHang: NguoiMuaHang[]
+    // @OneToOne(() => NguoiMuaHang, nguoiMuaHang => nguoiMuaHang.taiKhoanId)
+    // nguoiMuaHang: Relation<NguoiMuaHang>;
+
+    // @OneToOne(() => NguoiBanHang, nguoiBanHang => nguoiBanHang.taiKhoanId)
+    // nguoiBanHang: Relation<NguoiBanHang>;
 
 
     @BeforeInsert()
     async hashPassword() {
-        const hash = argon2.hash(this.MatKhau, {
-            hashLength: 3000,
+        const MatKhau = await argon.hash(this.MatKhau, {
+            hashLength: 200,
         })
-
+        this.MatKhau = MatKhau;
     }
+
+    async verifyPassword(MatKhau: string) {
+        return await argon.verify(MatKhau, this.MatKhau);
+    }
+
+
 
 
 }
 import { NguoiMuaHang } from "./NguoiMuaHang.entity";
+import { NguoiBanHang } from "./NguoiBanHang.entity";
 

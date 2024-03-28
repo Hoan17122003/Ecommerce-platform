@@ -8,7 +8,7 @@ import { NguoiBanHangRepository } from "src/database/Repository/NguoiBanHang.rep
 @Injectable({})
 export class VenderService extends BaseService<NguoiBanHangEntity, NguoiBanHangRepository> {
 
-    constructor(@Inject('NGUOIBANHANG_REPOSITORY') private readonly nguoiBanHangRepository: NguoiBanHangRepository) {
+    constructor(@Inject('NGUOIBANHANG_REPOSITORY') private readonly nguoiBanHangRepository?: NguoiBanHangRepository) {
         super(nguoiBanHangRepository)
     }
 

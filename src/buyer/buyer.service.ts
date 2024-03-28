@@ -7,7 +7,6 @@ import { NguoiMuaHangEntity } from "src/database/Entity/index.entity";
 import { NguoiMuaHangRepository } from "src/database/Repository/NguoiMuaHang.repository";
 
 
-@Global()
 @Injectable({})
 export class BuyerService extends BaseService<NguoiMuaHangEntity, NguoiMuaHangRepository> {
 
@@ -16,18 +15,22 @@ export class BuyerService extends BaseService<NguoiMuaHangEntity, NguoiMuaHangRe
         super(repository)
     }
 
-    async save(data: NguoiMuaHangEntity): Promise<NguoiMuaHangEntity | null> {
-        try {
-            return this.repository.save(data, {
-                reload: true
-            })
-        } catch (error) {
-            throw new Error(error);
-        }
-    }
+    // async save(data: NguoiMuaHangEntity): Promise<NguoiMuaHangEntity | null> {
+    //     try {
+    //         return this.repository.save(data, {
+    //             reload: true
+    //         })
+    //     } catch (error) {
+    //         throw new Error(error);
+    //     }
+    // }
 
-    test(): string {
-        return 'test';
+    // test(): string {
+    //     return 'test';
+    // }
+
+    test() {
+        return "hehehe"
     }
 
 
