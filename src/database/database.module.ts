@@ -7,7 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Global()
 @Module({
     providers: [...databaseProviders],
-    exports: [...databaseProviders]
+    exports: [...databaseProviders],
 })
 // @Global()
 // @Module({
@@ -26,4 +26,4 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 //         }
 //     })]
 // })
-export class DatabaseModule { }
+export class DatabaseModule {}

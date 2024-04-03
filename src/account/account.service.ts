@@ -1,52 +1,47 @@
-import { ForbiddenException, Inject, Injectable, Scope, Session, UnauthorizedException } from "@nestjs/common";
-import { DataSource, Repository, UnorderedBulkOperation } from "typeorm";
-import * as argon from 'argon2'
-import { JwtService } from "@nestjs/jwt";
+import { ForbiddenException, Inject, Injectable, Scope, Session, UnauthorizedException } from '@nestjs/common';
+import { DataSource, Repository, UnorderedBulkOperation } from 'typeorm';
+import * as argon from 'argon2';
 
+import { NguoiMuaHangEntity, TaiKhoanEntity } from 'src/database/Entity/index.entity';
+import { TaiKhoanDTO } from './dto/account.dto';
+import { BaseService } from 'src/database/base.service';
 
-import { NguoiMuaHangEntity, TaiKhoanEntity } from "src/database/Entity/index.entity";
-import { TaiKhoanDTO } from "./dto/account.dto";
-import { BaseService } from "src/database/base.service";
-
-import { TaiKhoanRepository } from "src/database/Repository/TaiKhoan.repository";
-import { BuyerDTO } from "src/buyer/dto/buyer.dto";
-import { BuyerService } from "src/buyer/buyer.service";
-import { VenderService } from "src/vender/vender.service";
-import { NguoiBanHangEntity } from "src/database/Entity/index.entity";
+import { TaiKhoanRepository } from 'src/database/Repository/TaiKhoan.repository';
+import { BuyerDTO } from 'src/buyer/dto/buyer.dto';
+import { BuyerService } from 'src/buyer/buyer.service';
+import { VenderService } from 'src/vender/vender.service';
+import { NguoiBanHangEntity } from 'src/database/Entity/index.entity';
 // import repository buyer and vender
 
 @Injectable({
-    scope: Scope.REQUEST
+    scope: Scope.REQUEST,
 })
-export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanRepository>  {
-
-
-
+export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanRepository> {
     constructor(
         @Inject('ACCOUNT_REPOSITORY') private readonly accountRepository: TaiKhoanRepository,
         @Inject('VENDER') private readonly venderService: VenderService,
         @Inject('BUYER') private readonly buyerService: BuyerService,
-        private jwtService: JwtService
     ) {
         super(accountRepository);
     }
 
-
-
-
-    async save(TenTaiKhoan, TenDangNhap, Email, MatKhau, VaiTro, AnhDaiDien, HoDem, Ten, SDT, NgayThangNamSinh, DiaChi): Promise<TaiKhoanEntity | undefined> {
+    async save(
+        TenTaiKhoan,
+        TenDangNhap,
+        Email,
+        MatKhau,
+        VaiTro,
+        AnhDaiDien,
+        HoDem,
+        Ten,
+        SDT,
+        NgayThangNamSinh,
+        DiaChi,
+    ): Promise<TaiKhoanEntity | undefined> {
         try {
-            console.log('vaitro', VaiTro);
-            console.log('TK: ', TenTaiKhoan)
-            console.log('TenDangNhap: ', TenDangNhap);
-            // console.log('adad: ', this.buyerService.test());
-            // console.log(this.buyerService.test())
-            console.log('test : ', this.buyerService.test());
-
-
             const newTaiKhoan = new TaiKhoanEntity();
             newTaiKhoan.TenTaiKhoan = TenTaiKhoan;
-            newTaiKhoan.TenDangNhap = TenDangNhap
+            newTaiKhoan.TenDangNhap = TenDangNhap;
             newTaiKhoan.Email = Email;
             newTaiKhoan.MatKhau = MatKhau;
             newTaiKhoan.VaiTro = VaiTro;
@@ -54,9 +49,7 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
 
             console.log('IdAccount : ', taikhoan.TaiKhoanId);
 
-
             if (VaiTro == 'NguoiMuaHang') {
-
                 const newBuyer = new NguoiMuaHangEntity();
                 newBuyer.HoDem = HoDem;
                 newBuyer.Ten = Ten;
@@ -85,10 +78,8 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
 
     async profile(id: number): Promise<TaiKhoanEntity | null> {
         try {
-            const account = await this.accountRepository.createQueryBuilder()
-                .where(`TaiKhoanId = ${id}`)
-                .getOne();
-            console.log(account)
+            const account = await this.accountRepository.createQueryBuilder().where(`TaiKhoanId = ${id}`).getOne();
+            console.log(account);
             return account;
             // return this.accountRepository.findOneId(id);
         } catch (error) {
@@ -103,27 +94,25 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
                 console.log(typeof data);
                 return data;
             }
-        } catch (error) {
-
-        }
+        } catch (error) {}
     }
     async findOne(tenDangNhap: string) {
         return this.accountRepository.find({
             select: {
                 TaiKhoanId: true,
                 TenTaiKhoan: true,
-                MatKhau: true
+                MatKhau: true,
             },
             where: {
-                TenDangNhap: tenDangNhap
-            }
-        })
+                TenDangNhap: tenDangNhap,
+            },
+        });
     }
 
-    async testJWT(session: Record<string, any>) {
-        const a = this.jwtService.verify(session.token)
-        return a;
-    }
+    // async testJWT(session: Record<string, any>) {
+    //     const a = this.jwtService.verify(session.token)
+    //     return a;
+    // }
 
     // async findUserName(tenDangNhap: string): Promise<TaiKhoanEntity> {
     //     try {
@@ -141,8 +130,7 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
     //     }
     // }
 
-    test() : string {
-        return "heehehe"
+    test(): string {
+        return 'heehehe';
     }
-
 }

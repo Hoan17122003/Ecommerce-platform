@@ -14,9 +14,11 @@ import { AccountModule } from './account/account.module';
 import { AccountService } from './account/account.service';
 import { BuyerService } from './buyer/buyer.service';
 import { VenderService } from './vender/vender.service';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './auth/strategy/local.strategy';
 
 @Module({
     // imports: [DatabaseModule, AuthModule, BuyerModule, VenderModule, ProductModule, BillModule, TransportersModule, PaymentModule],
     imports: [DatabaseModule, BuyerModule, VenderModule, AccountModule, AuthModule],
 })
-export class AppModule { }
+export class AppModule {}

@@ -33,11 +33,11 @@ export class AccountController {
     //     return token;
     // }
 
-    @Get('testJWT')
-    test(@Req() req: Request, @Session() session: Record<string, any>) {
+    // @Get('testJWT')
+    // test(@Req() req: Request, @Session() session: Record<string, any>) {
         
-        return this.accountService.testJWT(session.token);
-    }
+    //     return this.accountService.testJWT(session.token);
+    // }
 
 
 }
