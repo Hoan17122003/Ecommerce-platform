@@ -11,6 +11,7 @@ import { BuyerDTO } from 'src/buyer/dto/buyer.dto';
 import { BuyerService } from 'src/buyer/buyer.service';
 import { VenderService } from 'src/vender/vender.service';
 import { NguoiBanHangEntity } from 'src/database/Entity/index.entity';
+import { VenderDTO } from 'src/vender/dto/vender.dto';
 // import repository buyer and vender
 
 @Injectable({
@@ -26,49 +27,41 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
     }
 
     async save(
-        TenTaiKhoan,
-        TenDangNhap,
-        Email,
-        MatKhau,
-        VaiTro,
-        AnhDaiDien,
-        HoDem,
-        Ten,
-        SDT,
-        NgayThangNamSinh,
-        DiaChi,
+        taikhoan: TaiKhoanDTO,
+        HoDem: string,
+        Ten: string,
+        SDT: string,
+        NgayThangNamSinh: Date,
+        DiaChi?: string,
     ): Promise<TaiKhoanEntity | undefined> {
         try {
             const newTaiKhoan = new TaiKhoanEntity();
-            newTaiKhoan.TenTaiKhoan = TenTaiKhoan;
-            newTaiKhoan.TenDangNhap = TenDangNhap;
-            newTaiKhoan.Email = Email;
-            newTaiKhoan.MatKhau = MatKhau;
-            newTaiKhoan.VaiTro = VaiTro;
-            const taikhoan: TaiKhoanEntity = await this.accountRepository.save(newTaiKhoan);
+            newTaiKhoan.TenTaiKhoan = taikhoan.TenTaiKhoan;
+            newTaiKhoan.TenDangNhap = taikhoan.TenDangNhap;
+            newTaiKhoan.Email = taikhoan.Email;
+            newTaiKhoan.MatKhau = taikhoan.MatKhau;
+            newTaiKhoan.VaiTro = taikhoan.VaiTro;
+            const taiKhoan: TaiKhoanEntity = await this.accountRepository.save(newTaiKhoan);
 
-            console.log('IdAccount : ', taikhoan.TaiKhoanId);
-
-            if (VaiTro == 'NguoiMuaHang') {
-                const newBuyer = new NguoiMuaHangEntity();
-                newBuyer.HoDem = HoDem;
-                newBuyer.Ten = Ten;
-                newBuyer.SDT = SDT;
-                newBuyer.NgayThangNamSinh = NgayThangNamSinh;
-                newBuyer.MaNguoiMuaHang = taikhoan.TaiKhoanId;
-                await this.buyerService.store(newBuyer);
+            if (taikhoan.VaiTro == 'NguoiMuaHang') {
+                const nguoiMuaHang: BuyerDTO = {
+                    Ten,
+                    HoDem,
+                    SDT,
+                    NgayThangNamSinh,
+                };
+                await this.buyerService.create(nguoiMuaHang, taiKhoan.TaiKhoanId);
+            } else if (taikhoan.VaiTro == 'NguoiBanHang') {
+                const nguoiBanHang: VenderDTO = {
+                    HoDem,
+                    Ten,
+                    SDT,
+                    NgayThangNamSinh,
+                    DiaChi,
+                };
+                await this.venderService.create(nguoiBanHang, taiKhoan.TaiKhoanId);
             }
-            if (VaiTro == 'NguoiBanHang') {
-                const newVender = new NguoiBanHangEntity();
-                newVender.HoDem = HoDem;
-                newVender.Ten = Ten;
-                newVender.SDT = SDT;
-                newVender.NgayThangNamSinh = NgayThangNamSinh;
-                newVender.DiaChi = DiaChi;
-                // newVender.taikhoan = taikhoan;
-                await this.venderService.save(newVender);
-            }
-            return taikhoan;
+            return taiKhoan;
         } catch (error) {
             console.log('error : ', error);
             throw new ForbiddenException(error);
@@ -87,6 +80,7 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         }
     }
 
+    
     async changeInformation(id: number, type: string): Promise<TaiKhoanEntity> {
         try {
             if (type == 'NguoIBanHang') {
@@ -96,8 +90,8 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
             }
         } catch (error) {}
     }
-    async findOne(tenDangNhap: string) {
-        return this.accountRepository.find({
+    async find(tenDangNhap: string) {
+        return this.accountRepository.findOne({
             select: {
                 TaiKhoanId: true,
                 TenTaiKhoan: true,
@@ -109,28 +103,16 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         });
     }
 
-    // async testJWT(session: Record<string, any>) {
-    //     const a = this.jwtService.verify(session.token)
-    //     return a;
-    // }
-
-    // async findUserName(tenDangNhap: string): Promise<TaiKhoanEntity> {
-    //     try {
-    //         return this.accountRepository.find({
-    //             select: {
-    //                 TaiKhoanId: true,
-    //                 MatKhau: true
-    //             },
-    //             where: {
-    //                 TenDangNhap: tenDangNhap
-    //             }
-    //         });
-    //     } catch (error) {
-    //         throw new Error(error)
-    //     }
-    // }
-
-    test(): string {
-        return 'heehehe';
+    async findById(TaiKhoanId: number): Promise<TaiKhoanEntity> {
+        const user = await this.accountRepository.findOne({
+            select: {
+                TaiKhoanId: true,
+            },
+            where: {
+                TaiKhoanId: TaiKhoanId,
+            },
+        });
+        return user;
     }
+
 }

@@ -1,18 +1,40 @@
-import { Controller, Post, Body, Param, Get, Session, Req, Res, UseGuards } from "@nestjs/common";
-import { AccountService } from "./account.service";
-import { ParseIntPipe } from "@nestjs/common";
-import { Request, Response } from "express";
+import { Controller, Post, Body, Param, Get, Session, Req, Res, UseGuards } from '@nestjs/common';
+import { AccountService } from './account.service';
+import { ParseIntPipe } from '@nestjs/common';
+import { Request, Response } from 'express';
 
+import { VenderDTO } from 'src/vender/dto/vender.dto';
+import { BuyerDTO } from 'src/buyer/dto/buyer.dto';
+import { TaiKhoanDTO } from './dto/account.dto';
+import { NguoiMuaHang } from 'src/database/Entity/NguoiMuaHang.entity';
 @Controller('Account')
 export class AccountController {
-
-    constructor(private readonly accountService: AccountService) { }
+    constructor(private readonly accountService: AccountService) {}
 
     @Post('signuplocal')
     async createAccount(@Body() data: any) {
-        console.log('data:', data)
-        const { TenTaiKhoan, TenDangNhap, Email, MatKhau, VaiTro, AnhDaiDien, HoDem, Ten, SDT, NgayThangNamSinh, DiaChi } = data;
-        return this.accountService.save(TenTaiKhoan, TenDangNhap, Email, MatKhau, VaiTro, AnhDaiDien, HoDem, Ten, SDT, NgayThangNamSinh, DiaChi);
+        const {
+            TenTaiKhoan,
+            TenDangNhap,
+            Email,
+            MatKhau,
+            VaiTro,
+            AnhDaiDien,
+            HoDem,
+            Ten,
+            SDT,
+            NgayThangNamSinh,
+            DiaChi,
+        } = data;
+        const taiKhoan: TaiKhoanDTO = {
+            TenTaiKhoan,
+            TenDangNhap,
+            Email,
+            MatKhau,
+            VaiTro,
+            AnhDaiDien,
+        };
+        return this.accountService.save(taiKhoan, HoDem, Ten, SDT, NgayThangNamSinh, DiaChi);
     }
 
     @Post(':id/:vaitro/changeInformation')
@@ -23,9 +45,8 @@ export class AccountController {
     @UseGuards()
     @Get('profile/:id')
     async getProfileById(@Param('id', new ParseIntPipe()) id: number) {
-        return this.accountService.profile(id)
+        return this.accountService.profile(id);
     }
-
 
     // @Post('/local/login')
     // async login(@Body() data: any, @Req() req: Request, @Res() res: Response) {
@@ -35,9 +56,7 @@ export class AccountController {
 
     // @Get('testJWT')
     // test(@Req() req: Request, @Session() session: Record<string, any>) {
-        
+
     //     return this.accountService.testJWT(session.token);
     // }
-
-
 }

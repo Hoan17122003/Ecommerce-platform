@@ -6,18 +6,17 @@ import { AccountModule } from 'src/account/account.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { DatabaseModule } from 'src/database/database.module';
-import { LocalStrategy } from './strategy/local.strategy';
 
 @Module({
     imports: [
-        PassportModule,
         DatabaseModule,
         AccountModule,
+        PassportModule,
         JwtModule.register({
             secretOrPrivateKey: process.env.SECRETSESSION || '123123123@13231',
         }),
     ],
-    providers: [AuthService],
     controllers: [AuthController],
+    providers: [AuthService],
 })
 export class AuthModule {}

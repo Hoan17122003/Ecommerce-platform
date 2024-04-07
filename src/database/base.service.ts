@@ -21,6 +21,8 @@ export class BaseService<T extends BaseEntity, R extends Repository<T>> implemen
         return this.repository.findByIds(ids);
     }
 
+    
+
     async store(data: any): Promise<T | undefined> {
         return this.repository.save(data);
     }

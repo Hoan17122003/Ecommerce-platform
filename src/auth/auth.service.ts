@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
+import { ExtractJwt } from 'passport-jwt';
 
 import { AccountService } from 'src/account/account.service';
 import { AuthDTO } from './dto/auth.dto';
@@ -24,28 +25,29 @@ export class AuthService {
     // async SignUpWithGoogle() {}
 
     async validate(username: string, password: string): Promise<any | null> {
-        const taikhoan = await this.accountService.findOne(username);
+        const taikhoan = await this.accountService.find(username);
+        console.log('tai khoan : ', taikhoan);
         if (!taikhoan) throw new UnauthorizedException('Tên tài khoản không chính xác');
-        if (taikhoan && (await this.verifyPlainContentwithHashedContent(taikhoan[0].MatKhau, password))) {
-            const [MatKhau, ...result] = taikhoan;
+        if (taikhoan && (await this.verifyPlainContentwithHashedContent(taikhoan.MatKhau, password))) {
+            const { MatKhau, ...result } = taikhoan;
             return result;
         }
         return null;
     }
 
-    async signIn(DTO: AuthDTO): Promise<{ access_token: string; refresh_token: string }> {
+    async signIn(payload: PayLoadDTO): Promise<{ access_token: string; refresh_token: string }> {
         // xác thực tài khoản
-        const taikhoan = await this.validate(DTO.username, DTO.password);
-        if (!taikhoan) throw new UnauthorizedException('Sai thông tin đăng nhập');
+        if (!payload) throw new UnauthorizedException('Sai thông tin đăng nhập');
 
+        console.log('payload : ', payload);
         const token = await {
-            access_token: this.generateAccessToken(taikhoan.TaiKhoanId),
-            refresh_token: this.generateRefreshToken(taikhoan.TaiKhoanId),
+            access_token: this.generateAccessToken(payload.TaiKhoanId),
+            refresh_token: this.generateRefreshToken(payload.TaiKhoanId),
         };
         return token;
     }
 
-    private generateAccessToken(payload: string) {
+    private generateAccessToken(payload: number) {
         return this.jwtService.sign(
             { payload },
             {
@@ -55,7 +57,8 @@ export class AuthService {
         );
     }
 
-    private generateRefreshToken(payload: string) {
+    private generateRefreshToken(payload: number) {
+        console.log('id : ', payload);
         return this.jwtService.sign(
             { payload },
             {
@@ -74,4 +77,17 @@ export class AuthService {
     // test(): string {
     //     return this.accountService.test();
     // }
+    async verifyToken(payload: string): Promise<string> {
+        console.log(process.env.JWT_ACCESS_TOKEN_TIME);
+        const token = await this.jwtService.verify(payload, {
+            secret: 'access_token_secret',
+        });
+
+        if (!token) throw new ForbiddenException();
+        return token;
+    }
+
+    findById(id: number) {
+        return this.accountService.findById(id);
+    }
 }

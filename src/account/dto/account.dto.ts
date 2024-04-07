@@ -1,8 +1,8 @@
-import { IsEmail, isString, Length, isNumber, IsNotEmpty, MaxLength, IsStrongPassword } from 'class-validator';
+import { IsEmail, IsNotEmpty, MaxLength, IsStrongPassword, IsEmpty, isEnum, IsOptional } from 'class-validator';
+import { AccountRole } from './account.enum';
+import { Transform } from 'stream';
 
 export class TaiKhoanDTO {
-
-    
     @IsNotEmpty()
     @IsEmail()
     Email: string;
@@ -19,9 +19,10 @@ export class TaiKhoanDTO {
     @IsStrongPassword()
     MatKhau: string;
 
-    @IsNotEmpty()
-    vaitro: string;
-
+    @IsOptional()
+    @IsEmpty()
     AnhDaiDien: string;
-    constructor() {}
+
+    @IsNotEmpty()
+    VaiTro: string;
 }

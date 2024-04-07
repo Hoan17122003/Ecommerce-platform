@@ -1,10 +1,9 @@
-import { Entity, EntityRepository, Repository } from "typeorm";
-import { TaiKhoanEntity } from "../Entity/index.entity";
-import { EntityId } from "typeorm/repository/EntityId";
+import { Entity, EntityRepository, Repository } from 'typeorm';
+import { TaiKhoanEntity } from '../Entity/index.entity';
+import { EntityId } from 'typeorm/repository/EntityId';
 
 @EntityRepository(TaiKhoanEntity)
 export class TaiKhoanRepository extends Repository<TaiKhoanEntity> {
-
     // blockedAccount(id: EntityId) {
     //     return this.createQueryBuilder()
     //         .update()
@@ -17,22 +16,17 @@ export class TaiKhoanRepository extends Repository<TaiKhoanEntity> {
     //         .execute()
     // }
 
-
-    
-
     async findOneId(id: EntityId): Promise<TaiKhoanEntity | null> {
         try {
             return await this.createQueryBuilder('TaiKhoan')
+                .select('TenTaiKhoan', 'Email')
                 .where('TaiKhoanId = :id', {
-                    id: id
+                    id: id,
                 })
                 .getOne();
-
         } catch (error) {
             console.log(error);
             return null;
         }
     }
-
-
 }
