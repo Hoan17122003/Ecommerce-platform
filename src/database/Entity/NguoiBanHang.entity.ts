@@ -1,24 +1,34 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn, BaseEntity, ManyToOne, PrimaryColumn } from "typeorm";
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    OneToMany,
+    OneToOne,
+    JoinColumn,
+    BaseEntity,
+    ManyToOne,
+    PrimaryColumn,
+} from 'typeorm';
 
-import { TaiKhoan } from "./TaiKhoan.entity";
-import { Chat } from "./Chat.entity";
-import { DonHang } from "./DonHang.entity";
-import { ChiTietMaGiamGia } from "./ChiTietMaGiamGia.entity";
-import { ViNguoiDung } from "./ViNguoiDung.entity";
+import { TaiKhoan } from './TaiKhoan.entity';
+import { Chat } from './Chat.entity';
+import { DonHang } from './DonHang.entity';
+import { ChiTietMaGiamGia } from './ChiTietMaGiamGia.entity';
+import { ViNguoiDung } from './ViNguoiDung.entity';
+import { TaiKhoanEntity } from './index.entity';
 
 @Entity('NguoiBanHang')
 export class NguoiBanHang extends BaseEntity {
-
     @PrimaryColumn({
-        type: 'int'
+        type: 'int',
     })
     // @OneToOne(() => TaiKhoan)
     // @JoinColumn()
-    MaNguoiBanHang: number
+    MaNguoiBanHang: number;
 
     @Column({
         type: 'nvarchar',
-        length: 50
+        length: 50,
     })
     HoDem: string;
 
@@ -26,37 +36,35 @@ export class NguoiBanHang extends BaseEntity {
         type: 'nvarchar',
         length: 50,
     })
-    Ten: string
+    Ten: string;
 
     @Column({
         type: 'nvarchar',
         length: 20,
-        unique: true
+        unique: true,
     })
-    SDT: string
+    SDT: string;
 
     @Column({
-        type: 'date'
+        type: 'date',
     })
-    NgayThangNamSinh: Date
+    NgayThangNamSInh: Date;
 
     @Column({
         type: 'nvarchar',
-        length: 250
+        length: 250,
     })
-    DiaChi: string
+    DiaChi: string;
 
+    @OneToMany(() => Chat, (chat) => chat.nguoiBanHang)
+    chats: Chat[];
 
-    @OneToMany(() => Chat, chat => chat.nguoiBanHang)
-    chats: Chat[]
+    @OneToMany(() => DonHang, (donHang) => donHang.nguoiBanHang)
+    donHang: DonHang[];
 
-    @OneToMany(() => DonHang, donHang => donHang.nguoiBanHang)
-    donHang: DonHang[]
+    @OneToMany(() => ChiTietMaGiamGia, (chiTietMaGiamGia) => chiTietMaGiamGia.nguoiBanHang)
+    chiTietMaGiamGia: ChiTietMaGiamGia[];
 
-    @OneToMany(() => ChiTietMaGiamGia, chiTietMaGiamGia => chiTietMaGiamGia.nguoiBanHang)
-    chiTietMaGiamGia: ChiTietMaGiamGia[]
-
-    @OneToOne(() => ViNguoiDung, viNguoiDung => viNguoiDung.nguoiBanHang)
-    @JoinColumn()
-    viNguoiDung: ViNguoiDung
+    @OneToOne(() => ViNguoiDung)
+    viNguoiDung: ViNguoiDung;
 }

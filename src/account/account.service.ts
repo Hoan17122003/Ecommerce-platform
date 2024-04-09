@@ -1,4 +1,12 @@
-import { ForbiddenException, Inject, Injectable, Scope, Session, UnauthorizedException } from '@nestjs/common';
+import {
+    ForbiddenException,
+    Inject,
+    Injectable,
+    Scope,
+    Session,
+    UnauthorizedException,
+    UseGuards,
+} from '@nestjs/common';
 import { DataSource, Repository, UnorderedBulkOperation } from 'typeorm';
 import * as argon from 'argon2';
 
@@ -12,6 +20,8 @@ import { BuyerService } from 'src/buyer/buyer.service';
 import { VenderService } from 'src/vender/vender.service';
 import { NguoiBanHangEntity } from 'src/database/Entity/index.entity';
 import { VenderDTO } from 'src/vender/dto/vender.dto';
+import { JwtAccessTokenGuard } from 'src/auth/guard/JwtAuth.guard';
+import { getProfile } from 'src/database/Repository/TaiKhoan.repository';
 // import repository buyer and vender
 
 @Injectable({
@@ -35,6 +45,26 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         DiaChi?: string,
     ): Promise<TaiKhoanEntity | undefined> {
         try {
+            // const isTenDangNhap = await this.accountRepository.findOne({
+            //     select : {
+            //         TenDangNhap : true
+            //     },
+            //     where : {
+            //         TenDangNhap : taikhoan.TenDangNhap
+            //     }
+            // })
+
+            // const isEmail = await this.accountRepository.findOne({
+            //     select: {
+            //         Email: true,
+            //     },
+            //     where: {
+            //         TenDangNhap: taikhoan.Email,
+            //     },
+            // });
+
+            console.log(this.accountRepository.getProfile(2040));
+
             const newTaiKhoan = new TaiKhoanEntity();
             newTaiKhoan.TenTaiKhoan = taikhoan.TenTaiKhoan;
             newTaiKhoan.TenDangNhap = taikhoan.TenDangNhap;
@@ -50,7 +80,7 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
                     SDT,
                     NgayThangNamSinh,
                 };
-                await this.buyerService.create(nguoiMuaHang, taiKhoan.TaiKhoanId);
+                await this.buyerService.create(nguoiMuaHang, taiKhoan);
             } else if (taikhoan.VaiTro == 'NguoiBanHang') {
                 const nguoiBanHang: VenderDTO = {
                     HoDem,
@@ -59,7 +89,7 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
                     NgayThangNamSinh,
                     DiaChi,
                 };
-                await this.venderService.create(nguoiBanHang, taiKhoan.TaiKhoanId);
+                await this.venderService.create(nguoiBanHang, taiKhoan);
             }
             return taiKhoan;
         } catch (error) {
@@ -69,10 +99,9 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         }
     }
 
-    async profile(id: number): Promise<TaiKhoanEntity | null> {
+    async profile(id: number, vaitro: string): Promise<TaiKhoanEntity | null> {
         try {
-            const account = await this.accountRepository.createQueryBuilder().where(`TaiKhoanId = ${id}`).getOne();
-            console.log(account);
+            const account = await getProfile(id, vaitro);
             return account;
             // return this.accountRepository.findOneId(id);
         } catch (error) {
@@ -80,7 +109,6 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         }
     }
 
-    
     async changeInformation(id: number, type: string): Promise<TaiKhoanEntity> {
         try {
             if (type == 'NguoIBanHang') {
@@ -114,5 +142,4 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         });
         return user;
     }
-
 }

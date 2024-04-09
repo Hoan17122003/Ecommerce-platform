@@ -6,6 +6,8 @@ import { ExtractJwt } from 'passport-jwt';
 import * as session from 'express-session';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../auth.service';
+import { AccountService } from 'src/account/account.service';
+import { use } from 'passport';
 
 @Injectable()
 export class JwtAccessTokenGuard implements CanActivate {
@@ -25,16 +27,15 @@ export class JwtAccessTokenGuard implements CanActivate {
                 secret: process.env.JWT_ACCESS_TOKEN_SECRET,
             });
             const taiKhoanId = payload.payload;
-            const user = await this.authService.findById(taiKhoanId);
+            const user = await this.authService.findById(Number.parseInt(taiKhoanId));
             if (!user) throw new ForbiddenException();
 
-            request['user'] = payload;
+            request.session.user = payload;
         } catch (error) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException(error);
         }
 
         return true;
-        // return validateRequest(request);
     }
 
     private extractTokenFromHeader(request: Request): string | undefined {

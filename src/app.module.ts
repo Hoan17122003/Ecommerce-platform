@@ -15,9 +15,20 @@ import { AccountService } from './account/account.service';
 import { BuyerService } from './buyer/buyer.service';
 import { VenderService } from './vender/vender.service';
 import { PassportModule } from '@nestjs/passport';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAccessTokenGuard } from './auth/guard/JwtAuth.guard';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { AuthService } from './auth/auth.service';
 
 @Module({
     // imports: [DatabaseModule, AuthModule, BuyerModule, VenderModule, ProductModule, BillModule, TransportersModule, PaymentModule],
-    imports: [DatabaseModule, BuyerModule, VenderModule, AccountModule, AuthModule],
+    imports: [DatabaseModule, BuyerModule, VenderModule, AccountModule, AuthModule, JwtModule.register({})],
+    // providers: [
+    //     {
+    //         provide: APP_GUARD,
+    //         useClass: JwtAccessTokenGuard,
+    //     },
+    //     AuthService,
+    // ],
 })
 export class AppModule {}

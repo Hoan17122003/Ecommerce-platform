@@ -1,4 +1,16 @@
-import { Controller, Post, Body, Param, Get, Session, Req, Res, UseGuards } from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    Body,
+    Param,
+    Get,
+    Session,
+    Req,
+    Res,
+    UseGuards,
+    UnauthorizedException,
+    ForbiddenException,
+} from '@nestjs/common';
 import { AccountService } from './account.service';
 import { ParseIntPipe } from '@nestjs/common';
 import { Request, Response } from 'express';
@@ -7,6 +19,8 @@ import { VenderDTO } from 'src/vender/dto/vender.dto';
 import { BuyerDTO } from 'src/buyer/dto/buyer.dto';
 import { TaiKhoanDTO } from './dto/account.dto';
 import { NguoiMuaHang } from 'src/database/Entity/NguoiMuaHang.entity';
+import { JwtAccessTokenGuard } from 'src/auth/guard/JwtAuth.guard';
+import { session } from 'passport';
 @Controller('Account')
 export class AccountController {
     constructor(private readonly accountService: AccountService) {}
@@ -42,10 +56,19 @@ export class AccountController {
         return this.accountService.changeInformation(id, vaitro);
     }
 
-    @UseGuards()
-    @Get('profile/:id')
-    async getProfileById(@Param('id', new ParseIntPipe()) id: number) {
-        return this.accountService.profile(id);
+    @UseGuards(JwtAccessTokenGuard)
+    @Get(':VaiTro/profile/:id')
+    async getProfileById(
+        @Param('id', new ParseIntPipe()) id: number,
+        @Param('VaiTro') vaitro: string,
+        @Session() session: Record<string, any>,
+    ) {
+        try {
+            if (Number.parseInt(session.user.payload) != id) throw new ForbiddenException();
+        } catch (error) {
+            throw new ForbiddenException();
+        }
+        return this.accountService.profile(id,vaitro);
     }
 
     // @Post('/local/login')

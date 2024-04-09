@@ -1,29 +1,21 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from "typeorm";
-import { NguoiMuaHang } from "./NguoiMuaHang.entity";
-import { NguoiBanHang } from "./NguoiBanHang.entity";
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { NguoiMuaHang } from './NguoiMuaHang.entity';
+import { NguoiBanHang } from './NguoiBanHang.entity';
 
 @Entity('ViNguoiDung')
 export class ViNguoiDung {
     @PrimaryGeneratedColumn('identity')
-    MaViNguoiDung: number
+    MaViNguoiDung: number;
 
     @Column({
         type: 'money',
-        default: 0
+        default: 0,
     })
-    SoDuHienTai: number
+    SoDuHienTai: number;
 
     @Column({
         type: 'nvarchar',
-        length: 100
+        length: 100,
     })
-    TenNganHangLienKet: string
-
-    @OneToOne(() => NguoiMuaHang, nguoiMuaHang => nguoiMuaHang.viNguoiDung)
-    @JoinColumn()
-    nguoiMuaHang: NguoiMuaHang
-
-    @OneToOne(() => NguoiBanHang, nguoiBanHang => nguoiBanHang.viNguoiDung)
-    @JoinColumn()
-    nguoiBanHang: NguoiBanHang
+    TenNganHangLienKet: string;
 }

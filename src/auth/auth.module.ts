@@ -8,14 +8,7 @@ import { AuthController } from './auth.controller';
 import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
-    imports: [
-        DatabaseModule,
-        AccountModule,
-        PassportModule,
-        JwtModule.register({
-            secretOrPrivateKey: process.env.SECRETSESSION || '123123123@13231',
-        }),
-    ],
+    imports: [DatabaseModule, AccountModule, PassportModule, JwtModule.register({})],
     controllers: [AuthController],
     providers: [AuthService],
 })

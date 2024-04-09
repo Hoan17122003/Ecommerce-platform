@@ -1,5 +1,5 @@
 import { Injectable, Inject, Global } from '@nestjs/common';
-import { NguoiBanHangEntity } from 'src/database/Entity/index.entity';
+import { NguoiBanHangEntity, TaiKhoanEntity } from 'src/database/Entity/index.entity';
 import { Repository } from 'typeorm';
 import { BaseService } from 'src/database/base.service';
 import { NguoiBanHangRepository } from 'src/database/Repository/NguoiBanHang.repository';
@@ -16,14 +16,20 @@ export class VenderService extends BaseService<NguoiBanHangEntity, NguoiBanHangR
     //     super(repository)
     // }
 
-    async create(nguoiBanHang: VenderDTO, taiKhoanId: number): Promise<NguoiBanHangEntity> {
+    async create(nguoiBanHang: VenderDTO, taiKhoan: TaiKhoanEntity): Promise<NguoiBanHangEntity> {
         const nguoiBanHangEntity: NguoiBanHangEntity = new NguoiBanHangEntity();
-        nguoiBanHangEntity.Ten = nguoiBanHang.Ten;
         nguoiBanHangEntity.HoDem = nguoiBanHang.HoDem;
-        nguoiBanHangEntity.DiaChi = nguoiBanHang.DiaChi;
+        nguoiBanHangEntity.Ten = nguoiBanHang.Ten;
         nguoiBanHangEntity.SDT = nguoiBanHang.SDT;
-        nguoiBanHangEntity.NgayThangNamSinh = nguoiBanHang.NgayThangNamSinh;
-        nguoiBanHangEntity.MaNguoiBanHang = taiKhoanId;
+        nguoiBanHangEntity.NgayThangNamSInh = nguoiBanHang.NgayThangNamSinh;
+        nguoiBanHangEntity.DiaChi = nguoiBanHang.DiaChi;
+        nguoiBanHangEntity.MaNguoiBanHang = taiKhoan.TaiKhoanId;
+        nguoiBanHangEntity.chats = null;
+        nguoiBanHangEntity.donHang = null;
+        nguoiBanHangEntity.chiTietMaGiamGia = null;
+        nguoiBanHangEntity.viNguoiDung = null;
+
+        console.log('hehehe : ', nguoiBanHangEntity);
 
         return this.nguoiBanHangRepository.save(nguoiBanHangEntity, {
             reload: true,

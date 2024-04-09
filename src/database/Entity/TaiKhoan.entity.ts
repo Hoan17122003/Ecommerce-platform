@@ -15,6 +15,8 @@ import {
 import * as argon from 'argon2';
 import { TaiKhoanDTO } from 'src/account/dto/account.dto';
 
+import { NguoiBanHangEntity, NguoiMuaHangEntity } from './index.entity';
+
 @Entity('TaiKhoan')
 export class TaiKhoan extends BaseEntity {
     @PrimaryGeneratedColumn({
@@ -90,5 +92,3 @@ export class TaiKhoan extends BaseEntity {
         return await argon.verify(MatKhau, this.MatKhau);
     }
 }
-import { NguoiMuaHang } from './NguoiMuaHang.entity';
-import { NguoiBanHang } from './NguoiBanHang.entity';
