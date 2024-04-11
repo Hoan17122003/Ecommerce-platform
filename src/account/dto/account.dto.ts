@@ -1,9 +1,9 @@
 import { IsEmail, IsNotEmpty, MaxLength, IsStrongPassword, IsEmpty, isEnum, IsOptional } from 'class-validator';
-import { AccountRole } from './account.enum';
-import { Transform } from 'stream';
+
 
 export class TaiKhoanDTO {
     @IsNotEmpty()
+    @MaxLength(50)
     @IsEmail()
     Email: string;
 

@@ -26,7 +26,6 @@ export class AuthService {
 
     async validate(username: string, password: string): Promise<any | null> {
         const taikhoan = await this.accountService.find(username);
-        console.log('tai khoan : ', taikhoan);
         if (!taikhoan) throw new UnauthorizedException('Tên tài khoản không chính xác');
         if (taikhoan && (await this.verifyPlainContentwithHashedContent(taikhoan.MatKhau, password))) {
             const { MatKhau, ...result } = taikhoan;
@@ -39,10 +38,11 @@ export class AuthService {
         // xác thực tài khoản
         if (!payload) throw new UnauthorizedException('Sai thông tin đăng nhập');
 
-        console.log('payload : ', payload);
+        const refresh_token = await this.generateRefreshToken(payload.TaiKhoanId);
+        await this.accountService.setRefreshToken(refresh_token, payload.TaiKhoanId);
         const token = await {
             access_token: this.generateAccessToken(payload.TaiKhoanId),
-            refresh_token: this.generateRefreshToken(payload.TaiKhoanId),
+            refresh_token,
         };
         return token;
     }
@@ -58,7 +58,6 @@ export class AuthService {
     }
 
     private generateRefreshToken(payload: number) {
-        console.log('id : ', payload);
         return this.jwtService.sign(
             { payload },
             {
@@ -78,7 +77,6 @@ export class AuthService {
     //     return this.accountService.test();
     // }
     async verifyToken(payload: string): Promise<string> {
-        console.log(process.env.JWT_ACCESS_TOKEN_TIME);
         const token = await this.jwtService.verify(payload, {
             secret: 'access_token_secret',
         });
@@ -89,5 +87,9 @@ export class AuthService {
 
     findById(id: number) {
         return this.accountService.findById(id);
+    }
+
+    async findToken(refreshToken: string) {
+        return this.accountService.findRefreshToken(refreshToken);
     }
 }

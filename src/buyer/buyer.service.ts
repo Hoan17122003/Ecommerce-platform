@@ -23,8 +23,6 @@ export class BuyerService extends BaseService<NguoiMuaHangEntity, NguoiMuaHangRe
         nguoiMuaHangEntity.binhLuanDanhGia = null;
         nguoiMuaHangEntity.chats = null;
         nguoiMuaHangEntity.donHang = null;
-        console.log('check 1 : ', nguoiMuaHangEntity);
-        // console.log('taiKhoanId : ', taiKhoan.TaiKhoanId);
         return this.repository.save(nguoiMuaHangEntity);
     }
 

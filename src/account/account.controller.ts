@@ -16,41 +16,19 @@ import { ParseIntPipe } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { TaiKhoanDTO } from './dto/account.dto';
-import { JwtAccessTokenGuard } from 'src/auth/guard/JwtAuth.guard';
+import { JwtAccessTokenGuard } from 'src/auth/guard/JwtAccessAuth.guard';
 import { Public } from 'src/decorators/auth.decorators';
-
+import { UserDTO } from './dto/user.dto';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('Account')
 export class AccountController {
     constructor(private readonly accountService: AccountService) {}
 
-
     @Public()
     @Post('signuplocal')
-    async createAccount(@Body() data: any) {
-        const {
-            TenTaiKhoan,
-            TenDangNhap,
-            Email,
-            MatKhau,
-            VaiTro,
-            AnhDaiDien,
-            HoDem,
-            Ten,
-            SDT,
-            NgayThangNamSinh,
-            DiaChi,
-        } = data;
-        const taiKhoan: TaiKhoanDTO = {
-            TenTaiKhoan,
-            TenDangNhap,
-            Email,
-            MatKhau,
-            VaiTro,
-            AnhDaiDien,
-        };
-        return this.accountService.save(taiKhoan, HoDem, Ten, SDT, NgayThangNamSinh, DiaChi);
+    async createAccount(@Body() taikhoanDTO: TaiKhoanDTO, @Body() userDTO: UserDTO) {
+        return this.accountService.save(taikhoanDTO, userDTO);
     }
 
     @Post(':id/:vaitro/changeInformation')
@@ -69,7 +47,7 @@ export class AccountController {
         } catch (error) {
             throw new ForbiddenException();
         }
-        return this.accountService.profile(id,vaitro);
+        return this.accountService.profile(id, vaitro);
     }
 
     // @Post('/local/login')

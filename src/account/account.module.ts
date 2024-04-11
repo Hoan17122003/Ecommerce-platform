@@ -12,7 +12,7 @@ import { VenderService } from 'src/vender/vender.service';
 import { AccountController } from './account.controller';
 import { dataSource } from 'src/database/database.providers';
 import { AuthService } from 'src/auth/auth.service';
-import { JwtAccessTokenGuard } from 'src/auth/guard/JwtAuth.guard';
+import { JwtAccessTokenGuard } from 'src/auth/guard/JwtAccessAuth.guard';
 
 @Module({
     imports: [DatabaseModule, JwtModule.register({})],

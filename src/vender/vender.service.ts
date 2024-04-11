@@ -29,8 +29,6 @@ export class VenderService extends BaseService<NguoiBanHangEntity, NguoiBanHangR
         nguoiBanHangEntity.chiTietMaGiamGia = null;
         nguoiBanHangEntity.viNguoiDung = null;
 
-        console.log('hehehe : ', nguoiBanHangEntity);
-
         return this.nguoiBanHangRepository.save(nguoiBanHangEntity, {
             reload: true,
         });

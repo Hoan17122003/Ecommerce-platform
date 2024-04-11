@@ -11,6 +11,7 @@ import {
     PrimaryColumn,
     OneToOne,
     JoinColumn,
+    Unique,
 } from 'typeorm';
 import * as argon from 'argon2';
 import { TaiKhoanDTO } from 'src/account/dto/account.dto';
@@ -73,6 +74,13 @@ export class TaiKhoan extends BaseEntity {
         default: 1,
     })
     trangThaiTaiKhoan: number;
+
+    @Column({
+        default: null,
+        type: 'nvarchar',
+        length: 1000,
+    })
+    refreshToken: string;
 
     // @OneToOne(() => NguoiMuaHang, nguoiMuaHang => nguoiMuaHang.taiKhoanId)
     // nguoiMuaHang: Relation<NguoiMuaHang>;

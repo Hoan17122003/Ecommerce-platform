@@ -3,7 +3,7 @@ import { TaiKhoanEntity } from '../Entity/index.entity';
 import { EntityId } from 'typeorm/repository/EntityId';
 import { dataSource } from '../database.providers';
 import { unknowProviders } from 'src/middleware/dynamic-providers.providers';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 
 @EntityRepository(TaiKhoanEntity)
 export class TaiKhoanRepository extends Repository<TaiKhoanEntity> {
@@ -45,7 +45,6 @@ export class TaiKhoanRepository extends Repository<TaiKhoanEntity> {
 
 export const getProfile = async (id: number, vaitro: string): Promise<TaiKhoanEntity | undefined> => {
     const accountRepository = dataSource.getRepository(TaiKhoanEntity);
-    console.log('vaitro : ', vaitro);
     if (vaitro == 'NguoiMuaHang') {
         return await accountRepository.query(`select * from [dbo].account_getProfile_NguoiMuaHang(${id})`);
     } else if (vaitro == 'NguoiBanHang') {
@@ -82,21 +81,32 @@ export const findInformation = async (
     Email: string,
     SDT: string,
     vaitro: string,
-): Promise<boolean | undefined> => {
-    console.log('vaitro : ', typeof vaitro);
-    console.log('Email : ', Email);
-    console.log('Ten dang nhap : ', tenDangNhap);
-    console.log('SDT: ', SDT);
-    try {
-        if (!tenDangNhap || !Email || !SDT || !vaitro) return undefined;
-        const data = await dataSource
-            .getRepository(TaiKhoanEntity)
-            .query(`select * from [dbo].func_CheckInformation_User(${Email},${tenDangNhap},${SDT},${vaitro})`);
-        console.log('data : ', data);
+): Promise<boolean> => {
+    // try {
+    if (!tenDangNhap || !Email || !SDT || !vaitro) throw new UnauthorizedException();
+    const data = await dataSource
+        .getRepository(TaiKhoanEntity)
+        .query(`select * from [dbo].func_CheckInformation_User('${Email}','${tenDangNhap}','${SDT}','${vaitro}')`);
 
-        if (data) return true;
-        return false;
-    } catch (error) {
-        throw new ForbiddenException(error);
-    }
+    if (data[0]?.isTenDangNhap != null || data[0].isEmail != null || data[0].isSDT != null)
+        throw new UnauthorizedException(data[0]);
+
+    return true;
+    // } catch (error) {
+    //     throw new ForbiddenException(error);
+    // }
+};
+
+export const setRefreshToken = async (refreshToken: string, id: number) => {
+    const taiKhoan = await dataSource.getRepository(TaiKhoanEntity);
+    await taiKhoan
+        .createQueryBuilder()
+        .update()
+        .set({
+            refreshToken,
+        })
+        .where('TaiKhoanId = :id', {
+            id,
+        })
+        .execute();
 };

@@ -1,7 +1,4 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, ForbiddenException } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
-import { ExtractJwt } from 'passport-jwt';
 import { Reflector } from '@nestjs/core';
 
 import * as session from 'express-session';
@@ -25,9 +22,11 @@ export class JwtAccessTokenGuard implements CanActivate {
         if (isPublic) return true;
 
         const request = context.switchToHttp().getRequest();
+        const responses = context.switchToHttp().getResponse();
+        console.log('response : ', responses);
         // const token = this.extractTokenFromHeader(request);
         const token = request.rawHeaders[1].slice(7);
-        if (!token) throw new UnauthorizedException();
+        if (!token) throw new ForbiddenException();
         request.session.token = token;
         try {
             const payload = await this.jwtService.verifyAsync(token, {
@@ -39,7 +38,7 @@ export class JwtAccessTokenGuard implements CanActivate {
 
             request.session.user = payload;
         } catch (error) {
-            throw new UnauthorizedException(error);
+            throw new ForbiddenException(error);
         }
 
         return true;

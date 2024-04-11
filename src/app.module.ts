@@ -16,7 +16,7 @@ import { BuyerService } from './buyer/buyer.service';
 import { VenderService } from './vender/vender.service';
 import { PassportModule } from '@nestjs/passport';
 import { APP_GUARD } from '@nestjs/core';
-import { JwtAccessTokenGuard } from './auth/guard/JwtAuth.guard';
+import { JwtAccessTokenGuard } from './auth/guard/JwtAccessAuth.guard';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth/auth.service';
 

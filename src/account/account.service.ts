@@ -7,8 +7,6 @@ import {
     UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
-import { DataSource, Repository, UnorderedBulkOperation } from 'typeorm';
-import * as argon from 'argon2';
 
 import { NguoiMuaHangEntity, TaiKhoanEntity } from 'src/database/Entity/index.entity';
 import { TaiKhoanDTO } from './dto/account.dto';
@@ -18,10 +16,9 @@ import { TaiKhoanRepository } from 'src/database/Repository/TaiKhoan.repository'
 import { BuyerDTO } from 'src/buyer/dto/buyer.dto';
 import { BuyerService } from 'src/buyer/buyer.service';
 import { VenderService } from 'src/vender/vender.service';
-import { NguoiBanHangEntity } from 'src/database/Entity/index.entity';
 import { VenderDTO } from 'src/vender/dto/vender.dto';
-import { JwtAccessTokenGuard } from 'src/auth/guard/JwtAuth.guard';
-import { getProfile, findInformation } from 'src/database/Repository/TaiKhoan.repository';
+import { getProfile, findInformation, setRefreshToken } from 'src/database/Repository/TaiKhoan.repository';
+import { UserDTO } from './dto/user.dto';
 // import repository buyer and vender
 
 @Injectable({
@@ -36,19 +33,12 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         super(accountRepository);
     }
 
-    async save(
-        taikhoan: TaiKhoanDTO,
-        HoDem: string,
-        Ten: string,
-        SDT: string,
-        NgayThangNamSinh: Date,
-        DiaChi?: string,
-    ): Promise<TaiKhoanEntity | undefined> {
+    async save(taikhoan: TaiKhoanDTO, user: UserDTO): Promise<TaiKhoanEntity | undefined> {
         try {
-
-            if (await findInformation(taikhoan.TenDangNhap, taikhoan.Email, SDT, taikhoan.VaiTro))
-                throw new UnauthorizedException();
-
+            // if (await findInformation(taikhoan.TenDangNhap, taikhoan.Email, SDT, taikhoan.VaiTro))
+            //     throw new UnauthorizedException();
+            const data = await findInformation(taikhoan.TenDangNhap, taikhoan.Email, user.SDT, taikhoan.VaiTro);
+            if (!data) throw new UnauthorizedException();
             const newTaiKhoan = new TaiKhoanEntity();
             newTaiKhoan.TenTaiKhoan = taikhoan.TenTaiKhoan;
             newTaiKhoan.TenDangNhap = taikhoan.TenDangNhap;
@@ -59,27 +49,25 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
 
             if (taikhoan.VaiTro == 'NguoiMuaHang') {
                 const nguoiMuaHang: BuyerDTO = {
-                    Ten,
-                    HoDem,
-                    SDT,
-                    NgayThangNamSinh,
+                    Ten: user.Ten,
+                    HoDem: user.HoDem,
+                    SDT: user.SDT,
+                    NgayThangNamSinh: user.NgayThangNamSinh,
                 };
                 await this.buyerService.create(nguoiMuaHang, taiKhoan);
             } else if (taikhoan.VaiTro == 'NguoiBanHang') {
                 const nguoiBanHang: VenderDTO = {
-                    HoDem,
-                    Ten,
-                    SDT,
-                    NgayThangNamSinh,
-                    DiaChi,
+                    HoDem: user.HoDem,
+                    Ten: user.Ten,
+                    SDT: user.SDT,
+                    NgayThangNamSinh: user.NgayThangNamSinh,
+                    DiaChi: user.DiaChi,
                 };
                 await this.venderService.create(nguoiBanHang, taiKhoan);
             }
             return taiKhoan;
         } catch (error) {
-            console.log('error : ', error);
             throw new ForbiddenException(error);
-            // console.log('error: ', error);
         }
     }
 
@@ -97,7 +85,6 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         try {
             if (type == 'NguoIBanHang') {
                 let data = await this.accountRepository.findOneId(id);
-                console.log(typeof data);
                 return data;
             }
         } catch (error) {}
@@ -125,5 +112,22 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
             },
         });
         return user;
+    }
+
+    async setRefreshToken(refreshToken: string, id: number) {
+        await setRefreshToken(refreshToken, id);
+        return;
+    }
+
+    async findRefreshToken(refreshToken: string): Promise<boolean> {
+        const isRefreshToken = await this.accountRepository.findOne({
+            select: {
+                refreshToken: true,
+            },
+            where: {
+                refreshToken: refreshToken,
+            },
+        });
+        return isRefreshToken ? true : false;
     }
 }
