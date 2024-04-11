@@ -15,16 +15,18 @@ import { AccountService } from './account.service';
 import { ParseIntPipe } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-import { VenderDTO } from 'src/vender/dto/vender.dto';
-import { BuyerDTO } from 'src/buyer/dto/buyer.dto';
 import { TaiKhoanDTO } from './dto/account.dto';
-import { NguoiMuaHang } from 'src/database/Entity/NguoiMuaHang.entity';
 import { JwtAccessTokenGuard } from 'src/auth/guard/JwtAuth.guard';
-import { session } from 'passport';
+import { Public } from 'src/decorators/auth.decorators';
+
+
+@UseGuards(JwtAccessTokenGuard)
 @Controller('Account')
 export class AccountController {
     constructor(private readonly accountService: AccountService) {}
 
+
+    @Public()
     @Post('signuplocal')
     async createAccount(@Body() data: any) {
         const {
@@ -56,7 +58,6 @@ export class AccountController {
         return this.accountService.changeInformation(id, vaitro);
     }
 
-    @UseGuards(JwtAccessTokenGuard)
     @Get(':VaiTro/profile/:id')
     async getProfileById(
         @Param('id', new ParseIntPipe()) id: number,

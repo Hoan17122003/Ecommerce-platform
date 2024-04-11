@@ -21,7 +21,7 @@ import { VenderService } from 'src/vender/vender.service';
 import { NguoiBanHangEntity } from 'src/database/Entity/index.entity';
 import { VenderDTO } from 'src/vender/dto/vender.dto';
 import { JwtAccessTokenGuard } from 'src/auth/guard/JwtAuth.guard';
-import { getProfile } from 'src/database/Repository/TaiKhoan.repository';
+import { getProfile, findInformation } from 'src/database/Repository/TaiKhoan.repository';
 // import repository buyer and vender
 
 @Injectable({
@@ -45,25 +45,9 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         DiaChi?: string,
     ): Promise<TaiKhoanEntity | undefined> {
         try {
-            // const isTenDangNhap = await this.accountRepository.findOne({
-            //     select : {
-            //         TenDangNhap : true
-            //     },
-            //     where : {
-            //         TenDangNhap : taikhoan.TenDangNhap
-            //     }
-            // })
 
-            // const isEmail = await this.accountRepository.findOne({
-            //     select: {
-            //         Email: true,
-            //     },
-            //     where: {
-            //         TenDangNhap: taikhoan.Email,
-            //     },
-            // });
-
-            console.log(this.accountRepository.getProfile(2040));
+            if (await findInformation(taikhoan.TenDangNhap, taikhoan.Email, SDT, taikhoan.VaiTro))
+                throw new UnauthorizedException();
 
             const newTaiKhoan = new TaiKhoanEntity();
             newTaiKhoan.TenTaiKhoan = taikhoan.TenTaiKhoan;

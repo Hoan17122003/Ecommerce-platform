@@ -2,21 +2,28 @@ import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Forbi
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 import { ExtractJwt } from 'passport-jwt';
+import { Reflector } from '@nestjs/core';
 
 import * as session from 'express-session';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../auth.service';
-import { AccountService } from 'src/account/account.service';
-import { use } from 'passport';
+import { IS_PUBLIC_KEY } from 'src/decorators/auth.decorators';
 
 @Injectable()
 export class JwtAccessTokenGuard implements CanActivate {
     constructor(
         private jwtService: JwtService,
         private authService: AuthService,
+        private reflector: Reflector,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
+        const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+        if (isPublic) return true;
+
         const request = context.switchToHttp().getRequest();
         // const token = this.extractTokenFromHeader(request);
         const token = request.rawHeaders[1].slice(7);

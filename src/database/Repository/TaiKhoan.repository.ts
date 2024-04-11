@@ -3,6 +3,7 @@ import { TaiKhoanEntity } from '../Entity/index.entity';
 import { EntityId } from 'typeorm/repository/EntityId';
 import { dataSource } from '../database.providers';
 import { unknowProviders } from 'src/middleware/dynamic-providers.providers';
+import { ForbiddenException } from '@nestjs/common';
 
 @EntityRepository(TaiKhoanEntity)
 export class TaiKhoanRepository extends Repository<TaiKhoanEntity> {
@@ -74,4 +75,28 @@ export const getProfile = async (id: number, vaitro: string): Promise<TaiKhoanEn
     //         TenTaiKhoan: 'DESC',
     //     },
     // });
+};
+
+export const findInformation = async (
+    tenDangNhap: string,
+    Email: string,
+    SDT: string,
+    vaitro: string,
+): Promise<boolean | undefined> => {
+    console.log('vaitro : ', typeof vaitro);
+    console.log('Email : ', Email);
+    console.log('Ten dang nhap : ', tenDangNhap);
+    console.log('SDT: ', SDT);
+    try {
+        if (!tenDangNhap || !Email || !SDT || !vaitro) return undefined;
+        const data = await dataSource
+            .getRepository(TaiKhoanEntity)
+            .query(`select * from [dbo].func_CheckInformation_User(${Email},${tenDangNhap},${SDT},${vaitro})`);
+        console.log('data : ', data);
+
+        if (data) return true;
+        return false;
+    } catch (error) {
+        throw new ForbiddenException(error);
+    }
 };
