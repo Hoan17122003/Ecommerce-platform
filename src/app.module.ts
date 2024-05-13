@@ -22,7 +22,15 @@ import { AuthService } from './auth/auth.service';
 
 @Module({
     // imports: [DatabaseModule, AuthModule, BuyerModule, VenderModule, ProductModule, BillModule, TransportersModule, PaymentModule],
-    imports: [DatabaseModule, BuyerModule, VenderModule, AccountModule, AuthModule, JwtModule.register({})],
+    imports: [
+        DatabaseModule,
+        BuyerModule,
+        VenderModule,
+        AccountModule,
+        AuthModule,
+        JwtModule.register({}),
+        ProductModule,
+    ],
     // providers: [
     //     {
     //         provide: APP_GUARD,

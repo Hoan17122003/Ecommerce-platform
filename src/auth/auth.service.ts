@@ -47,7 +47,7 @@ export class AuthService {
         return token;
     }
 
-    private generateAccessToken(payload: number) {
+    public generateAccessToken(payload: number) {
         return this.jwtService.sign(
             { payload },
             {
@@ -89,7 +89,7 @@ export class AuthService {
         return this.accountService.findById(id);
     }
 
-    async findToken(refreshToken: string) {
-        return this.accountService.findRefreshToken(refreshToken);
+    async findToken(refreshToken: string, taiKhoanId: number) {
+        return this.accountService.findRefreshToken(refreshToken, taiKhoanId);
     }
 }

@@ -26,6 +26,10 @@ export class BuyerService extends BaseService<NguoiMuaHangEntity, NguoiMuaHangRe
         return this.repository.save(nguoiMuaHangEntity);
     }
 
+    async changeInformation(id: number, SDT: string) {
+        return await this.repository.update(id, { SDT });
+    }
+
     test() {
         return 'hehehe';
     }

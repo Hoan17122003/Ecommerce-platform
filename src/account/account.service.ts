@@ -19,6 +19,7 @@ import { VenderService } from 'src/vender/vender.service';
 import { VenderDTO } from 'src/vender/dto/vender.dto';
 import { getProfile, findInformation, setRefreshToken } from 'src/database/Repository/TaiKhoan.repository';
 import { UserDTO } from './dto/user.dto';
+import { DEFAULT_EAGER_REFRESH_THRESHOLD_MILLIS } from 'google-auth-library/build/src/auth/authclient';
 // import repository buyer and vender
 
 @Injectable({
@@ -33,7 +34,7 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         super(accountRepository);
     }
 
-    async save(taikhoan: TaiKhoanDTO, user: UserDTO): Promise<TaiKhoanEntity | undefined> {
+    async save(taikhoan: TaiKhoanDTO, user: UserDTO): Promise<TaiKhoanEntity> {
         try {
             // if (await findInformation(taikhoan.TenDangNhap, taikhoan.Email, SDT, taikhoan.VaiTro))
             //     throw new UnauthorizedException();
@@ -67,7 +68,7 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
             }
             return taiKhoan;
         } catch (error) {
-            throw new ForbiddenException(error);
+            throw new UnauthorizedException(error);
         }
     }
 
@@ -81,12 +82,17 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         }
     }
 
-    async changeInformation(id: number, type: string): Promise<TaiKhoanEntity> {
+    async changeInformation(
+        id: number,
+        type: string,
+        data: { TenTaiKhoan?: string; SDT?: string; DiaChi?: string; AnhDaiDien?: string },
+    ): Promise<TaiKhoanEntity | number> {
         try {
-            if (type == 'NguoIBanHang') {
-                let data = await this.accountRepository.findOneId(id);
-                return data;
-            }
+            if (type === 'NguoiBanHang') {
+                await this.venderService.changeInformation(id, { SDT: data.SDT, DiaChi: data.DiaChi });
+            } else if (type === 'NguoiMuaHang') await this.buyerService.changeInformation(id, data.SDT);
+            await this.accountRepository.update(id, { AnhDaiDien: data.AnhDaiDien, TenTaiKhoan: data.TenTaiKhoan });
+            return id;
         } catch (error) {}
     }
     async find(tenDangNhap: string) {
@@ -106,6 +112,7 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         const user = await this.accountRepository.findOne({
             select: {
                 TaiKhoanId: true,
+                VaiTro: true,
             },
             where: {
                 TaiKhoanId: TaiKhoanId,
@@ -119,15 +126,22 @@ export class AccountService extends BaseService<TaiKhoanEntity, TaiKhoanReposito
         return;
     }
 
-    async findRefreshToken(refreshToken: string): Promise<boolean> {
+    async findRefreshToken(refreshToken: string, taiKhoanId: number): Promise<boolean> {
         const isRefreshToken = await this.accountRepository.findOne({
             select: {
                 refreshToken: true,
             },
             where: {
+                TaiKhoanId: taiKhoanId,
                 refreshToken: refreshToken,
             },
         });
         return isRefreshToken ? true : false;
+    }
+
+    async deleteAccount(id: number, vaitro: string): Promise<string> {
+        if (vaitro === 'NguoiBanHang') await this.venderService.delete(id);
+        else if (vaitro === 'NguoiMuaHang') await this.venderService.delete(id);
+        return 'xoá thành công';
     }
 }

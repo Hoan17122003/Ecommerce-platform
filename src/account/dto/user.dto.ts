@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Length, MaxLength } from 'class-validator';
+import { IsEmpty, IsNotEmpty, IsString, Length, MaxLength } from 'class-validator';
 
 export class UserDTO {
     @IsString()

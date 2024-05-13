@@ -34,6 +34,11 @@ export class VenderService extends BaseService<NguoiBanHangEntity, NguoiBanHangR
         });
     }
 
+    async changeInformation(id: number, data: { SDT?: string; DiaChi?: string }): Promise<number> {
+        const nguoiBanHang = await this.nguoiBanHangRepository.update(id, { SDT: data.SDT, DiaChi: data.DiaChi });
+        return nguoiBanHang ? 1 : 0;
+    }
+
     getRepository() {
         return this.nguoiBanHangRepository;
     }

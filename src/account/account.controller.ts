@@ -10,6 +10,11 @@ import {
     UseGuards,
     UnauthorizedException,
     ForbiddenException,
+    Put,
+    Patch,
+    Redirect,
+    Query,
+    Delete,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { ParseIntPipe } from '@nestjs/common';
@@ -19,6 +24,8 @@ import { TaiKhoanDTO } from './dto/account.dto';
 import { JwtAccessTokenGuard } from 'src/auth/guard/JwtAccessAuth.guard';
 import { Public } from 'src/decorators/auth.decorators';
 import { UserDTO } from './dto/user.dto';
+import { Roles } from 'src/decorators/role.decoratos';
+import { JwtRefreshTokenGuard } from 'src/auth/guard/JwtRefreshAuth.guard';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('Account')
@@ -27,13 +34,23 @@ export class AccountController {
 
     @Public()
     @Post('signuplocal')
-    async createAccount(@Body() taikhoanDTO: TaiKhoanDTO, @Body() userDTO: UserDTO) {
-        return this.accountService.save(taikhoanDTO, userDTO);
+    async createAccount(@Body() taikhoanDTO: TaiKhoanDTO, @Body() userDTO: UserDTO, @Res() res: Response) {
+        try {
+            const data = await this.accountService.save(taikhoanDTO, userDTO);
+            if (!data) throw new UnauthorizedException();
+            return res.status(200).json({ message: 'tạo tài khoản thành công' });
+        } catch (error) {
+            throw new UnauthorizedException(error);
+        }
     }
 
-    @Post(':id/:vaitro/changeInformation')
-    async changeInformation(@Param('id', new ParseIntPipe()) id: number, @Param('vaitro') vaitro: string) {
-        return this.accountService.changeInformation(id, vaitro);
+    @Patch(':VaiTro/:id/changeInformation')
+    async changeInformation(
+        @Param('id', new ParseIntPipe()) id: number,
+        @Param('VaiTro') vaitro: string,
+        @Body() data: any,
+    ) {
+        return this.accountService.changeInformation(id, vaitro, data);
     }
 
     @Get(':VaiTro/profile/:id')
@@ -61,4 +78,13 @@ export class AccountController {
 
     //     return this.accountService.testJWT(session.token);
     // }
+
+    @Delete('delete/:VaiTro/:id')
+    async remove(@Param('id', new ParseIntPipe()) id: number, @Param('VaiTro') vaitro: string) {
+        try {
+            return this.accountService.deleteAccount(id, vaitro);
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }

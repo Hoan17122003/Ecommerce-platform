@@ -27,6 +27,7 @@ export class ProductService extends BaseService<SanPhamEntity, SanPhamRepository
         });
     }
 
+<<<<<<< HEAD
 //     async create(productDTO: ProductDTO, maNguoiBanHang: number): Promise<number | undefined> {
 //         try {
 //             const sanPham = new SanPhamEntity(
@@ -44,3 +45,22 @@ export class ProductService extends BaseService<SanPhamEntity, SanPhamRepository
 //         }
 //     }
 // }
+=======
+    async create(productDTO: ProductDTO, maNguoiBanHang: number): Promise<number | undefined> {
+        try {
+            const sanPham = new SanPhamEntity(
+                productDTO.TenSanPham,
+                productDTO.GiaBan,
+                productDTO.AnhSanPham,
+                productDTO.MoTaSanPham,
+                productDTO.SoLuongSanPham,
+                productDTO.ThuongHieu,
+            );
+            const result = await addProduct(sanPham, maNguoiBanHang);
+            return result;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+}
+>>>>>>> bdebd04 (create product part 1)

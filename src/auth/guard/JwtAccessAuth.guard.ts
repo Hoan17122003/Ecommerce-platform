@@ -21,9 +21,8 @@ export class JwtAccessTokenGuard implements CanActivate {
         ]);
         if (isPublic) return true;
 
+        console.log('1...');
         const request = context.switchToHttp().getRequest();
-        const responses = context.switchToHttp().getResponse();
-        console.log('response : ', responses);
         // const token = this.extractTokenFromHeader(request);
         const token = request.rawHeaders[1].slice(7);
         if (!token) throw new ForbiddenException();

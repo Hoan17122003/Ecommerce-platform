@@ -2,18 +2,28 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { AuthService } from '../auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class JwtRefreshTokenGuard implements CanActivate {
-    constructor(private readonly authService: AuthService) {}
+    constructor(
+        private readonly authService: AuthService,
+        private readonly jwtService: JwtService,
+    ) {}
 
-    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    async canActivate(context: ExecutionContext): Promise<boolean> {
         const requests = context.switchToHttp().getRequest();
         const token = this.extractTokenFromHeader(requests);
         if (!token) {
             return false;
         }
-        return this.authService.findToken(token);
+        const payload = await this.jwtService.verifyAsync(token, {
+            secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+        });
+        requests.session.token = payload;
+        console.log('payload : ', payload);
+
+        return this.authService.findToken(token, payload.payload);
     }
 
     private extractTokenFromHeader(request: Request): string | undefined {

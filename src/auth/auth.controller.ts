@@ -15,10 +15,10 @@ import { Request, Response } from 'express';
 import * as session from 'express-session';
 
 import { AuthService } from './auth.service';
-import {} from '../account/dto/account.dto';
 import { LocalAuthGuard } from './guard/LocalAuth.guard';
 import { JwtAccessTokenGuard } from './guard/JwtAccessAuth.guard';
 import { Public } from 'src/decorators/auth.decorators';
+import { JwtRefreshTokenGuard } from './guard/JwtRefreshAuth.guard';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('Auth')
@@ -51,4 +51,23 @@ export class AuthController {
     async test() {
         return this.authService.findById(2040);
     }
+
+    @Public()
+    @UseGuards(JwtRefreshTokenGuard)
+    @Get('get-access-token')
+    async generateAccessToken(@Res() res: Response, @Session() session: Record<string, any>) {
+        return res.status(201).json({ accessToken: this.authService.generateAccessToken(session.token.payload) });
+    }
+
+    // @Public()
+    // @Post('SendMail')
+    // async sendMail(@Body() data: Record<string, any>) {
+    //     return this.mailService.sendUserConfirmation({
+    //         email: data.email,
+    //         subject: data.subject,
+    //         content: data.content,
+    //     });
+    //     // return SendMail(data.email,data.subject,data.content)
+    //     // return 'hehehe';
+    // }
 }
